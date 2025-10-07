@@ -1,4 +1,4 @@
-# 🧩 Former Goat Puzzle – Monty Hall Simulation  
+# 🧩 Search Algorithms for the Wolf–Goat–Cabbage River Crossing Problem  
 <p align="center">
   <img src="OrmesbyPsalter.jpg" width="550"/>
 </p>
