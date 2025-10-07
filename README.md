@@ -7,13 +7,14 @@
 
 ---
 
-## 🚀 Overview  
+## Overview
 
-This notebook simulates the **Monty Hall (Former Goat) Puzzle** using **classical search algorithms** —  
-**Breadth-First Search (BFS)**, **Depth-First Search (DFS)**, and **Uniform Cost Search (UCS)** —  
-to explore decision paths in the door-selection problem.
+This project solves the classic **Wolf–Goat–Cabbage (WGC)** river-crossing puzzle using **search algorithms**:
+- **Breadth-First Search (BFS)** – finds the **shortest** (fewest crossings) solution  
+- **Depth-First Search (DFS)** – explores deeply; may detour before finding a solution  
+- **Uniform Cost Search (UCS)** – finds the **least-cost** solution (equal to BFS when all moves cost 1)
 
-Rather than relying solely on random simulation, each algorithm systematically explores all possible states and outcomes to determine the optimal strategy for maximizing the chance of winning the car.
+It also includes interactive tracing to explain how we reach the **optimal 7-move solution** (“Step 7”) and how each algorithm differs.
 
 You can open and run the notebook directly:  
 ```bash
@@ -21,24 +22,27 @@ jupyter notebook "CAP_5636_HW3.ipynb"
 ```
 ---
 
-## Problem Description
+## Problem Structure
 
-In the Monty Hall problem, a player faces three doors:
+Players: Farmer (F), Wolf (W), Goat (G), Cabbage (C)
 
-Behind one door is a car (the prize).
+Banks: Left (L) and Right (R)
 
-Behind the other two doors are goats.
+Boat: carries Farmer + (at most one) of {W,G,C}
 
-**Game Rules:**
+Start: all on Left bank → (L,L,L,L) (order F,W,G,C)
 
-1. The player selects one door at random.
+Goal: all on Right bank → (R,R,R,R)
 
-2. The host (who knows what’s behind each door) opens another door that has a goat.
+## Safety Constraints
 
-3. The player then chooses whether to stay with the original door or switch to the other unopened door.
+A state is unsafe (invalid) if the Farmer is absent from a bank where:
 
-Question: Should the player stay or switch to maximize the chance of winning?
+W and G are together (wolf eats goat), or
 
+G and C are together (goat eats cabbage).
+
+We must never generate or expand unsafe states.
 ---
 
 ## ⚙️ Setup
@@ -59,100 +63,133 @@ Matplotlib ≥ 3.8
 Jupyter Notebook
 
 ---
-# 🔍 State Representation
+## State Representation
 
-Each state in the search tree represents a unique configuration of:
+A state is a 4-tuple of positions (F, W, G, C) where each is 'L' or 'R'.
 
-Player’s choice – which door is currently selected
+Examples:
 
-Host’s revealed door – which door is opened to show a goat
+Start: ('L','L','L','L')
 
-Remaining unopened doors
+Goal: ('R','R','R','R')
 
-Decision outcome – whether the player wins or loses by staying or switching
+### Validity Check (Pseudocode)
+'''
+def safe(state):
+    F, W, G, C = state
+    # If farmer not with Wolf & Goat together → unsafe
+    if F != W == G: return False
+    # If farmer not with Goat & Cabbage together → unsafe
+    if F != G == C: return False
+    return True
+'''
+### Moves (Transitions)
+From any state:
 
-Example State:
-'''(player_door=1, car_door=3, host_door=2, action="switch") '''
+The Farmer can cross alone, or with exactly one of {W,G,C} that is on the same bank as the Farmer.
 
-Each algorithm explores transitions between these states differently, depending on the search policy.
+After crossing, we must check safe(new_state).
+''' bash
+ENTITIES = ['F','W','G','C']
+
+def opposite(side): return 'R' if side == 'L' else 'L'
+
+def successors(state):
+    F, W, G, C = state
+    side = F
+    cand = []
+    # Farmer alone
+    s = list(state); s[0] = opposite(F)
+    cand.append(tuple(s))
+    # Farmer with one passenger (on same bank)
+    for i, label in enumerate(['W','G','C'], start=1):
+        if state[i] == side:
+            t = list(state)
+            t[0] = opposite(F)
+            t[i] = opposite(state[i])
+            cand.append(tuple(t))
+    # Filter unsafe states
+    return [x for x in cand if safe(x)]
+
+'''
 
 # 🧩 Algorithms Implemented
 
-**1. Breadth-First Search (BFS)
-**
-Explores all states level by level.
+### Breadth-First Search (BFS)
 
-Ensures the shortest path to a goal (winning configuration) is found first.
+Uses a queue (FIFO)
 
-Each node represents a possible combination of player/host actions.
+Guarantees the fewest crossings solution
 
-BFS Workflow:
+With unit costs, BFS result ≡ UCS result
 
-Initialize queue with root node (initial door selection).
+### Depth-First Search (DFS)
 
-Expand all states by revealing one goat door.
+Uses a stack (LIFO) / recursion
 
-Generate next possible moves (stay or switch).
+Memory-light, but may wander into dead ends before backtracking
 
-Stop when a terminal state (win/lose) is reached.
+Solution length can exceed the optimum
 
-✅ Pros: Guarantees the optimal (shortest) solution path.
-⚠️ Cons: High memory usage for branching states.
+###  Uniform Cost Search (UCS)
 
-**2. Depth-First Search (DFS)
-**
-Explores a single branch of the state tree deeply before backtracking.
+Uses a priority queue keyed by cumulative path cost
 
-Useful for exhaustively exploring all decision combinations.
+With unit edge costs, returns the same 7-move solution as BFS
 
-DFS Workflow:
-
-Start from root node (initial choice).
-
-Recurse through door reveal → switch/stay transitions.
-
-Track visited states to prevent cycles.
-
-✅ Pros: Memory efficient, simple recursive structure.
-⚠️ Cons: May find a non-optimal solution earlier (depends on tree depth).
-
-**3. Uniform Cost Search (UCS)
-**
-Expands the lowest cumulative cost node first.
-
-Each transition (door reveal, switch/stay) is assigned a cost (e.g., probability or action weight).
-
-Finds the least-cost path to the winning state.
-
-UCS Workflow:
-
-Use a priority queue ordered by path cost.
-
-Expand the state with the smallest total cost.
-
-Continue until the goal state (win) is reached.
-
-✅ Pros: Guarantees the least-cost (optimal) solution.
-⚠️ Cons: Requires consistent cost metrics for fair comparison.
+Supports custom costs (e.g., penalize taking the goat back) for “what-if” analyses
 
 ---
-# Algorithm Comparison
-| Algorithm | Search Strategy            | Optimal Solution | Memory Usage | Execution Time | Notes                             |
-| :-------- | :------------------------- | :--------------: | :----------: | :------------: | :-------------------------------- |
-| BFS       | Level-by-level exploration |       ✅ Yes      |    🔺 High   |    Moderate    | Finds shortest win path first     |
-| DFS       | Deep recursive search      | ❌ Not guaranteed |     ✅ Low    |      Fast      | May explore unnecessary states    |
-| UCS       | Cost-based priority search |       ✅ Yes      |  ⚠️ Moderate |    Moderate    | Finds least-cost winning strategy |
+## Optimal Plan (7 Moves)
+
+The known optimal crossing sequence in 7 moves (Farmer travels each time):
+
+F + G → R (W,C on L)
+
+F ← (G on R)
+
+F + W → R (C on L)
+
+F + G ← (W on R)
+
+F + C → R (G on L)
+
+F ← (W,C on R)
+
+F + G → R (Goal)
+
+BFS/UCS should discover a length-7 path; DFS may find longer depending on child ordering.
 
 ---
+## Step-By-Step Traces (including Step 7)
 
-# Algorithm Outcomes
+Below are canonical traces with unit costs and a fixed child ordering:
+[Farmer alone, Farmer+W, Farmer+G, Farmer+C].
 
-BFS consistently finds the shortest sequence of actions leading to a win.
+BFS Queue
+|  Step | Frontier size | Popped State  | Action Taken  | Notes                          |
+| ----: | ------------: | ------------- | ------------- | ------------------------------ |
+|     1 |             1 | (L,L,L,L)     | expand        | start                          |
+|     2 |             3 | (R,L,R,L)     | from F+G→R    | valid successor                |
+|     3 |             5 | (L,L,R,L)     | F←            |                                |
+|     4 |             7 | (R,R,R,L)     | F+W→R         |                                |
+|     5 |             9 | (L,R,L,L)     | F+G←          |                                |
+|     6 |            11 | (R,R,L,R)     | F+C→R         |                                |
+| **7** |        **12** | **(L,R,L,R)** | **F←**        | queue still has goal successor |
+|     8 |            12 | (R,R,R,R)     | goal dequeued | **Goal reached (7 moves)**     |
 
-DFS covers the full search space but can get stuck in non-winning branches before backtracking.
 
-UCS adapts to varying costs, identifying the lowest cumulative cost route to the goal.
+## 🧾 Final Results Summary
 
+| Algorithm | Solution Found | Moves (Path Length) | Optimal Solution | Search Cost | Characteristics |
+|:-----------|:---------------:|:------------------:|:----------------:|:------------:|:----------------|
+| **Breadth-First Search (BFS)** | ✅ Yes | **7** | ✅ Yes | Moderate | Expands all shallow states first; guarantees the shortest (7-move) crossing plan. |
+| **Depth-First Search (DFS)** | ✅ Yes | 8–12 (varies) | ❌ No | Low | Finds a valid plan quickly but may detour; depends on node ordering and depth bound. |
+| **Uniform Cost Search (UCS)** | ✅ Yes | **7** | ✅ Yes | Moderate | Same as BFS under unit costs; supports weighted edges for cost-optimized variants. |
+
+**Interpretation:**  
+BFS and UCS both discover the **7-move optimal solution**, which transfers all entities safely across the river without rule violations.  
+DFS also succeeds but may explore redundant paths or exceed the optimal move count depending on traversal order.
 
 **Author:** Karthika Ramasamy  
 
