@@ -76,8 +76,6 @@ Example State:
 
 Each algorithm explores transitions between these states differently, depending on the search policy.
 
----
-
 # 🧩 Algorithms Implemented
 
 **1. Breadth-First Search (BFS)
@@ -144,3 +142,15 @@ Continue until the goal state (win) is reached.
 | BFS       | Level-by-level exploration |       ✅ Yes      |    🔺 High   |    Moderate    | Finds shortest win path first     |
 | DFS       | Deep recursive search      | ❌ Not guaranteed |     ✅ Low    |      Fast      | May explore unnecessary states    |
 | UCS       | Cost-based priority search |       ✅ Yes      |  ⚠️ Moderate |    Moderate    | Finds least-cost winning strategy |
+
+---
+
+# Algorithm Outcomes
+
+BFS consistently finds the shortest sequence of actions leading to a win.
+
+DFS covers the full search space but can get stuck in non-winning branches before backtracking.
+
+UCS adapts to varying costs, identifying the lowest cumulative cost route to the goal.
+
+Across all algorithms, the winning probability aligns with the theoretical 2/3 success rate for switching versus 1/3 for staying.
