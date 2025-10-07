@@ -1,12 +1,10 @@
 # 🧩 Former Goat Puzzle – Monty Hall Simulation  
-**Author:** Karthika Ramasamy  
-
-[![Python](https://img.shields.io/badge/Python-3.10-blue.svg)]() [![NumPy](https://img.shields.io/badge/NumPy-1.26-blue.svg)]() [![Matplotlib](https://img.shields.io/badge/Matplotlib-3.8-orange.svg)]() [![Status](https://img.shields.io/badge/Simulation-Monty%20Hall%20Problem-green.svg)]()
-
-### Figure 
 <p align="center">
   <img src="OrmesbyPsalter.jpg" width="550"/>
 </p>
+
+[![Python](https://img.shields.io/badge/Python-3.10-blue.svg)]() [![NumPy](https://img.shields.io/badge/NumPy-1.26-blue.svg)]() [![Matplotlib](https://img.shields.io/badge/Matplotlib-3.8-orange.svg)]() [![Status](https://img.shields.io/badge/Simulation-Monty%20Hall%20Problem-green.svg)]()
+
 ---
 
 ## 🚀 Overview  
@@ -154,5 +152,9 @@ BFS consistently finds the shortest sequence of actions leading to a win.
 DFS covers the full search space but can get stuck in non-winning branches before backtracking.
 
 UCS adapts to varying costs, identifying the lowest cumulative cost route to the goal.
+
+
+**Author:** Karthika Ramasamy  
+
 
 Across all algorithms, the winning probability aligns with the theoretical 2/3 success rate for switching versus 1/3 for staying.
