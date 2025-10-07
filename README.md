@@ -73,8 +73,9 @@ Start: ('L','L','L','L')
 
 Goal: ('R','R','R','R')
 
+
 ### Validity Check (Pseudocode)
-'''
+'''bash
 def safe(state):
     F, W, G, C = state
     # If farmer not with Wolf & Goat together → unsafe
@@ -89,7 +90,7 @@ From any state:
 The Farmer can cross alone, or with exactly one of {W,G,C} that is on the same bank as the Farmer.
 
 After crossing, we must check safe(new_state).
-''' bash
+'''bash
 ENTITIES = ['F','W','G','C']
 
 def opposite(side): return 'R' if side == 'L' else 'L'
