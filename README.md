@@ -3,6 +3,10 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10-blue.svg)]() [![NumPy](https://img.shields.io/badge/NumPy-1.26-blue.svg)]() [![Matplotlib](https://img.shields.io/badge/Matplotlib-3.8-orange.svg)]() [![Status](https://img.shields.io/badge/Simulation-Monty%20Hall%20Problem-green.svg)]()
 
+### Figure 
+<p align="center">
+  <img src="OrmesbyPsalter.jpg" width="550"/>
+</p>
 ---
 
 ## 🚀 Overview  
