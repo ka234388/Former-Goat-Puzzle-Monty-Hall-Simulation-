@@ -13,5 +13,4 @@ This notebook implements a **simulation of the Monty Hall (Former Goat) Puzzle**
 The goal is to empirically demonstrate why **switching doors** after the host reveals a goat yields a higher chance of winning the car.
 
 You can open and run the notebook directly:  
-```bash
 jupyter notebook "CAP_5636_HW3.ipynb"
